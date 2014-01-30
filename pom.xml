@@ -1,0 +1,208 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.454</version><!-- which version of Jenkins is this plugin built against? -->
+    </parent>
+
+    <groupId>org.jenkins.plugin</groupId>
+    <artifactId>simple-loadbalancer-plugin</artifactId>
+    <version>1.0.2</version>
+    <packaging>hpi</packaging>
+    
+    <name>Simple LoadBalancer Plugin</name>
+    <developers>
+        <developer>
+            <name>Lipatov Nikita</name>
+            <timezone>+4</timezone>
+        </developer>
+    </developers>
+    
+    <properties>
+        <jenkins.plugins.dir>${user.home}/.jenkins/plugins</jenkins.plugins.dir>
+        <tomcat.home>C:/apache_tomcat_7.0.11</tomcat.home>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>m.g.o-public</id>
+            <url>https://nexussrv.netcracker.com/content/repositories/maven.jenkins-ci.org/</url>
+        </repository>
+		<repository>
+            <id>repo.jenkins-ci.org</id>
+			<url>https://nexussrv.netcracker.com/content/repositories/repo.jenkins-ci.org/</url>
+		</repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>m.g.o-public</id>
+            <url>https://nexussrv.netcracker.com/content/repositories/maven.jenkins-ci.org/</url>
+        </pluginRepository>
+		<pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+			<url>https://nexussrv.netcracker.com/content/repositories/repo.jenkins-ci.org/</url>
+		</pluginRepository>
+    </pluginRepositories>
+    
+    <dependencies>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.7.1</version>
+			<scope>test</scope>
+		</dependency>
+        <dependency>
+            <groupId>ant</groupId>
+            <artifactId>ant-nodeps</artifactId>
+            <version>1.6.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>stop server</id>
+                        <phase>validate</phase>
+                        <configuration>
+                            <target>
+                                <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.test.classpath"/>
+                                <if>
+                                    <available file="${tomcat.home}/bin/shutdown.bat" type="file"/>
+                                    <then>
+                                        <exec 
+                                            dir="${tomcat.home}/bin" 
+                                            executable="cmd.exe" 
+                                            failonerror="false"
+                                            output="${project.build.directory}/stop_tomcat.log">
+                                                <arg line="/c shutdown.bat"/>
+                                        </exec>
+                                    </then>
+                                </if>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>copying plugin and start server</id>
+                        <phase>install</phase>
+                        <configuration>
+                            <target>
+                                <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="maven.test.classpath"/>
+                                <if>
+                                    <available file="${tomcat.home}/bin/startup.bat" type="file"/>
+                                    <then>
+                                        <echo message="*****************************************"/>
+                                        <echo message="     INSTALL JENKINS PLUGIN:"/>
+                                        <echo message="*****************************************"/>
+                                        <copy todir="${jenkins.plugins.dir}">
+                                            <fileset dir="${project.build.directory}">
+                                                <include name="${project.artifactId}.hpi"/>
+                                            </fileset>
+                                        </copy>
+                                        <unzip dest="${jenkins.plugins.dir}/${project.artifactId}">
+                                            <fileset dir="${jenkins.plugins.dir}">
+                                                <include name="${project.artifactId}.hpi"/>
+                                            </fileset>
+                                        </unzip>
+                                        <move tofile="${jenkins.plugins.dir}/${project.artifactId}.jpi">
+                                            <fileset dir="${jenkins.plugins.dir}">
+                                                <include name="${project.artifactId}.hpi"/>
+                                            </fileset>
+                                        </move>
+                                        
+                                        <exec 
+                                            dir="${tomcat.home}/bin" 
+                                            executable="cmd.exe" 
+                                            failonerror="false"
+                                            output="${project.build.directory}/start_tomcat.log">
+                                                <arg line="/c startup.bat"/>
+                                        </exec>
+                                    </then>
+                                </if>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.5.1</version>
+                <configuration>
+                    <formats>
+                        <format>xml</format>
+                    </formats>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>cobertura</goal>
+                        </goals>
+                    </execution>
+                </executions>
+			</plugin>
+        </plugins>
+    </build>
+    
+    <reporting>
+		<plugins>
+            <!-- checkstyle -->
+			<!-- mvn clean checkstyle:checkstyle -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.9.1</version>
+                <configuration>
+                    <configLocation>${basedir}/confs/checkstyle.xml</configLocation>
+                </configuration>
+			</plugin>
+            
+            <!-- findbugs -->
+			<!-- mvn clean package findbugs:findbugs -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>2.4.0</version>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+            </plugin>
+		</plugins>
+	</reporting>
+</project>

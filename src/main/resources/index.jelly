@@ -1,0 +1,7 @@
+<!--
+  This view is used to render the installed plugins page.
+-->
+<div>
+    Jenkins Plugin: simple-load-balancer.
+    This plugin overrides a standard algorithm of load balancing.
+</div>

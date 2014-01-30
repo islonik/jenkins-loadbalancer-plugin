@@ -1,0 +1,17 @@
+<j:jelly
+    xmlns:j="jelly:core"
+    xmlns:st="jelly:stapler"
+    xmlns:d="jelly:define"
+    xmlns:l="/lib/layout"
+    xmlns:t="/lib/hudson"
+    xmlns:f="/lib/form">
+        <f:section title="LoadBalancer Plugin">
+            <f:entry >
+                 <select name="NewAlgorithm">
+                     <j:forEach var="algorithm" items="${it.algorithms}">
+                         <f:option value="${algorithm}" selected="${algorithm==it.selectedAlgorithm}">${algorithm}</f:option>
+                     </j:forEach>
+                 </select>
+             </f:entry>
+        </f:section>
+</j:jelly>
