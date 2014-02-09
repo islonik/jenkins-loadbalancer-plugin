@@ -23,36 +23,27 @@
         <jenkins.plugins.dir>${user.home}/.jenkins/plugins</jenkins.plugins.dir>
         <tomcat.home>C:/apache_tomcat_7.0.11</tomcat.home>
     </properties>
-
+    
     <repositories>
         <repository>
-            <id>m.g.o-public</id>
-            <url>https://nexussrv.netcracker.com/content/repositories/maven.jenkins-ci.org/</url>
-        </repository>
-		<repository>
             <id>repo.jenkins-ci.org</id>
-			<url>https://nexussrv.netcracker.com/content/repositories/repo.jenkins-ci.org/</url>
-		</repository>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
     </repositories>
-
     <pluginRepositories>
         <pluginRepository>
-            <id>m.g.o-public</id>
-            <url>https://nexussrv.netcracker.com/content/repositories/maven.jenkins-ci.org/</url>
-        </pluginRepository>
-		<pluginRepository>
             <id>repo.jenkins-ci.org</id>
-			<url>https://nexussrv.netcracker.com/content/repositories/repo.jenkins-ci.org/</url>
-		</pluginRepository>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
     </pluginRepositories>
     
     <dependencies>
-		<dependency>
-			<groupId>org.apache.ant</groupId>
-			<artifactId>ant</artifactId>
-			<version>1.7.1</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.7.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>ant</groupId>
             <artifactId>ant-nodeps</artifactId>
@@ -158,9 +149,9 @@
                 </executions>
             </plugin>
             <plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.1</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.5.1</version>
                 <configuration>
                     <formats>
                         <format>xml</format>
@@ -174,25 +165,25 @@
                         </goals>
                     </execution>
                 </executions>
-			</plugin>
+            </plugin>
         </plugins>
     </build>
     
     <reporting>
-		<plugins>
+        <plugins>
             <!-- checkstyle -->
-			<!-- mvn clean checkstyle:checkstyle -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.9.1</version>
+            <!-- mvn clean checkstyle:checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.9.1</version>
                 <configuration>
                     <configLocation>${basedir}/confs/checkstyle.xml</configLocation>
                 </configuration>
-			</plugin>
+            </plugin>
             
             <!-- findbugs -->
-			<!-- mvn clean package findbugs:findbugs -->
+            <!-- mvn clean package findbugs:findbugs -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
@@ -203,6 +194,6 @@
                     <threshold>Low</threshold>
                 </configuration>
             </plugin>
-		</plugins>
-	</reporting>
+        </plugins>
+    </reporting>
 </project>
